@@ -1,5 +1,6 @@
 import { WebSocket } from 'ws';
 import { Model, Schema } from 'mongoose';
+import { IMessageType } from './router/chat';
 
 export interface IUserFields {
 	email: string;
@@ -29,20 +30,11 @@ export interface IActiveConnections {
 	[id: string]: WebSocket;
 }
 
-export enum IMessageType {
-	login = 'LOGIN',
-	logout = 'LOGOUT',
-	newMessage = 'NEW_MESSAGE',
-	sendMessage = 'SEND_MESSAGE',
-	deleteMessage = 'DELETE_MESSAGE',
-	personalMessage = 'SEND_PERSONAL_MESSAGE',
-}
-
 export interface IMessagePayload {
-	_id: string;
+	_id?: string;
 	token: string;
-	message: string;
-	createdAt: string;
+	message?: string;
+	createdAt?: string;
 	recipient?: string;
 }
 

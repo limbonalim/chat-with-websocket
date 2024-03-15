@@ -4,8 +4,9 @@ import cors from 'cors';
 
 import chatRouter, { mountRouter } from './router/chat';
 import usersRouter from './router/users';
+import mongoose from 'mongoose';
+import config from './config';
 
-const port = 8000;
 const app = express();
 expressWs(app);
 mountRouter();
@@ -14,6 +15,16 @@ app.use(cors());
 app.use('/chat', chatRouter);
 app.use('/users', usersRouter);
 
-app.listen(port, () => {
-	console.log(`Server started on ${port} port!`);
-});
+const run = async () => {
+	await mongoose.connect(config.mongoose);
+
+	app.listen(config.port, () => {
+		console.log(`Server started on ${config.port} port!`);
+	});
+
+	process.on('exit', () => {
+		mongoose.disconnect();
+	});
+};
+
+void run();
