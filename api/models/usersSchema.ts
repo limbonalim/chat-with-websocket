@@ -47,6 +47,7 @@ const usersSchema = new Schema<IUserFields, IUserModel, IUserMethods>({
 		type: String,
 		required: true,
 	},
+	avatar: String,
 });
 
 usersSchema.methods.checkPassword = function (password: string) {

@@ -8,6 +8,7 @@ export interface IUserFields {
 	role: string;
 	token: string;
 	displayName: string;
+	avatar?: string;
 }
 
 export interface IUserMethods {
@@ -30,15 +31,32 @@ export interface IActiveConnections {
 	[id: string]: WebSocket;
 }
 
-export interface IMessagePayload {
+export interface IMessageOutputPayload {
 	_id?: string;
-	token: string;
+	user: {
+		displayName: string;
+		avatar?: string;
+	};
 	message?: string;
-	createdAt?: string;
+	createdAt: string;
+	recipient?: {
+		displayName: string;
+		avatar?: string;
+	};
+}
+
+export interface IOutputMessage {
+	type: IMessageType;
+	payload: IMessageOutputPayload;
+}
+
+export interface IMessageComingPayload {
+	user: string;
+	message?: string;
 	recipient?: string;
 }
 
-export interface IMessage {
+export interface IComingMessage {
 	type: IMessageType;
-	payload: IMessagePayload;
+	payload: IMessageComingPayload;
 }

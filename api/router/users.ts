@@ -1,8 +1,8 @@
-import { Router } from 'express';
+import express, { Router } from 'express';
 import mongoose from 'mongoose';
 import User from '../models/usersSchema';
 
-const usersRouter = Router();
+const usersRouter = Router() as express.Router;
 
 usersRouter.post('/', async (req, res, next) => {
 	try {
@@ -55,7 +55,7 @@ usersRouter.post('/sessions', async (req, res, next) => {
 
 		return res
 			.status(400)
-			.send({ message: 'username and password should be in request' });
+			.send({ message: 'email and password should be in request' });
 	} catch (e) {
 		next(e);
 	}
