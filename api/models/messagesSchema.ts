@@ -10,6 +10,7 @@ const messagesSchema = new Schema<IMessageFields, IMessageModel, unknown>({
 	user: {
 		type: Schema.Types.ObjectId,
 		required: true,
+		ref: 'users',
 		validate: {
 			validator: async (userId: Schema.Types.ObjectId) => {
 				const user = await User.findById(userId);
@@ -24,6 +25,7 @@ const messagesSchema = new Schema<IMessageFields, IMessageModel, unknown>({
 	},
 	recipient: {
 		type: Schema.Types.ObjectId,
+		ref: 'users',
 		validate: {
 			validator: async (userId: Schema.Types.ObjectId) => {
 				const user = await User.findById(userId);
