@@ -23,10 +23,12 @@ const filterActiveConnections = () => {
 	const uniqueObjects = activeConnections
 		.map((item) => item.user)
 		.filter((obj) => {
-			if (setPayload.has(obj?._id?.toString())) {
+			if (!obj) return false;
+
+			if (setPayload.has(obj._id?.toString())) {
 				return false;
 			}
-			setPayload.add(obj?._id?.toString());
+			setPayload.add(obj._id?.toString());
 			return true;
 		});
 
@@ -190,7 +192,6 @@ export const mountRouter = () => {
 				} else if (messageData.type === IMessageType.logout) {
 					console.log(`client ${id} is logout!`);
 					activeConnections.filter((collection) => collection.id === id);
-					user = null;
 					const users = activeConnections.map(async (connection) => {
 						const user = await User.findById(connection.user)
 							.select('displayName avatar -_id')
