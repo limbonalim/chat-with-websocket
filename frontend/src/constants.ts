@@ -11,6 +11,7 @@ export enum IMessageType {
 	logout = 'LOGOUT',
 	newMessage = 'NEW_MESSAGE',
 	sendMessage = 'SEND_MESSAGE',
+	activeUsersInfo = 'ACTIVE_USERS_INFO',
 	deleteMessage = 'DELETE_MESSAGE',
 	personalMessage = 'SEND_PERSONAL_MESSAGE',
 }
