@@ -36,6 +36,8 @@ export interface IUser {
 	token: string;
 }
 
+export type IPayloadUser = Pick<IUser, 'displayName', 'avatar'>;
+
 export interface IMessagePayload {
 	_id?: string;
 	user: {
@@ -52,5 +54,5 @@ export interface IMessagePayload {
 
 export interface IMessage {
 	type: IMessageType;
-	payload: IMessagePayload;
+	payload: IMessagePayload[] | IPayloadUser[];
 }
