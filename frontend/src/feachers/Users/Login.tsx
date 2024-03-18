@@ -39,7 +39,7 @@ const Login = () => {
 	const onSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		await dispatch(login(state)).unwrap();
-		navigate('/');
+		navigate('/chat');
 	};
 
 	return (

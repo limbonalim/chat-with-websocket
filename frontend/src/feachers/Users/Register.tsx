@@ -48,7 +48,7 @@ const Register = () => {
 		e.preventDefault();
 
 		await dispatch(register(state)).unwrap();
-		navigate('/');
+		navigate('/chat');
 	};
 
 	return (
