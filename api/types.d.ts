@@ -1,5 +1,5 @@
 import { WebSocket } from 'ws';
-import { Model, Schema } from 'mongoose';
+import { Document, Model, Schema } from 'mongoose';
 import { IMessageType } from './router/chat';
 
 export interface IUserFields {
@@ -22,13 +22,16 @@ export interface IMessageFields {
 	message: string;
 	user: Schema.Types.ObjectId;
 	createdAt: Date;
+	isPersonal: boolean;
 	recipient?: Schema.Types.ObjectId;
 }
 
 export type IMessageModel = Model<IMessageFields, unknown, unknown>;
 
 export interface IActiveConnections {
-	[id: string]: WebSocket;
+	id: string;
+	ws: WebSocket;
+	user?: Document<IUserFields, IUserModel, IUserMethods>;
 }
 
 export interface IMessageOutputPayload {
@@ -47,7 +50,7 @@ export interface IMessageOutputPayload {
 
 export interface IOutputMessage {
 	type: IMessageType;
-	payload: IMessageOutputPayload;
+	payload: IMessageOutputPayload[];
 }
 
 export interface IMessageComingPayload {
