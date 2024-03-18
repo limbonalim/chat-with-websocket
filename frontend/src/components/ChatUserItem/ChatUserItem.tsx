@@ -1,5 +1,6 @@
 import { Grid, Box, Avatar, Badge } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { IPayloadUser } from '../../types';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	'& .MuiBadge-badge': {
@@ -30,7 +31,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 	},
 }));
 
-const ChatUserItem = () => {
+const ChatUserItem: React.FC<IPayloadUser> = ({ displayName, avatar }) => {
 	return (
 		<Grid item>
 			<Box display="flex" alignItems="center" gap={1}>
@@ -39,9 +40,9 @@ const ChatUserItem = () => {
 					anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
 					variant="dot"
 				>
-					<Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+					<Avatar alt="Remy Sharp" src={avatar} />
 				</StyledBadge>
-				<Box>User</Box>
+				<Box>{displayName}</Box>
 			</Box>
 		</Grid>
 	);
