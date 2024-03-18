@@ -1,30 +1,36 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store.ts';
-import type { IMessage } from '../../types';
+import { IMessagePayload, IPayloadUser } from '../../types';
 
 interface chatState {
-	messages: IMessage[];
+	messages: IMessagePayload[];
+	users: IPayloadUser[];
 }
 
 const initialState: chatState = {
 	messages: [],
+	users: [],
 };
 
 const chatSlice = createSlice({
 	name: 'chat',
 	initialState,
 	reducers: {
-		getMessages: (state, { payload: messages }: PayloadAction<IMessage[]>) => {
+		getMessages: (
+			state,
+			{ payload: messages }: PayloadAction<IMessagePayload[]>,
+		) => {
 			state.messages = messages;
 		},
-		getOneMessage: (state, { payload: message }: PayloadAction<IMessage>) => {
-			state.messages.push(message);
+		getUsers: (state, { payload: users }: PayloadAction<IPayloadUser[]>) => {
+			state.users = users;
 		},
 	},
 });
 
 export const selectMessages = (state: RootState) => state.chat.messages;
+export const selectUsers = (state: RootState) => state.chat.users;
 
-export const { getMessages, getOneMessage } = chatSlice.actions;
+export const { getMessages, getUsers } = chatSlice.actions;
 
 export const chatReducer = chatSlice.reducer;
