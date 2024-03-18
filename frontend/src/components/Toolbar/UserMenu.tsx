@@ -8,9 +8,10 @@ import { BASE_URL } from '../../constants.ts';
 
 interface Props {
 	user: IUser;
+	disconect: () => void;
 }
 
-const UserMenu: React.FC<Props> = ({ user }) => {
+const UserMenu: React.FC<Props> = ({ user, disconect }) => {
 	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 	const dispatch = useAppDispatch();
 
@@ -25,6 +26,11 @@ const UserMenu: React.FC<Props> = ({ user }) => {
 
 	const onClose = () => {
 		setAnchorEl(null);
+	};
+
+	const handleLogout = () => {
+		dispatch(logout()).unwrap();
+		disconect();
 	};
 
 	return (
@@ -43,7 +49,7 @@ const UserMenu: React.FC<Props> = ({ user }) => {
 				onClose={onClose}
 				keepMounted
 			>
-				<MenuItem onClick={() => dispatch(logout())}>LogOut</MenuItem>
+				<MenuItem onClick={handleLogout}>LogOut</MenuItem>
 			</Menu>
 		</>
 	);

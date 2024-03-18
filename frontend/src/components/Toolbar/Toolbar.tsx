@@ -5,7 +5,11 @@ import { selectUser } from '../../feachers/Users/usersSlice.ts';
 import UserMenu from './UserMenu.tsx';
 import AnonymousMenu from './AnonymousMenu.tsx';
 
-const Toolbar = () => {
+interface Props {
+	disconect: () => void;
+}
+
+const Toolbar: React.FC<Props> = ({ disconect }) => {
 	const user = useAppSelector(selectUser);
 	return (
 		<Grid
@@ -22,7 +26,11 @@ const Toolbar = () => {
 					Chat
 				</Link>
 			</Grid>
-			{user ? <UserMenu user={user} /> : <AnonymousMenu />}
+			{user ? (
+				<UserMenu user={user} disconect={disconect} />
+			) : (
+				<AnonymousMenu />
+			)}
 		</Grid>
 	);
 };
