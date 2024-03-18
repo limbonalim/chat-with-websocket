@@ -54,5 +54,5 @@ export interface IMessagePayload {
 
 export interface IMessage {
 	type: IMessageType;
-	payload: IMessagePayload[] | IPayloadUser[];
+	payload: IMessagePayload[] | IPayloadUser[] | string;
 }

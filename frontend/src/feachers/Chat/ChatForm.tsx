@@ -10,11 +10,16 @@ interface Props {
 }
 
 export interface ISendMessage {
-	type: IMessageType.sendMessage | IMessageType.personalMessage;
-	payload: {
-		message: string;
-		user: string;
-	};
+	type:
+		| IMessageType.sendMessage
+		| IMessageType.personalMessage
+		| IMessageType.deleteMessage;
+	payload:
+		| {
+				message: string;
+				user: string;
+		  }
+		| string;
 }
 
 const ChatForm: React.FC<Props> = ({ sendMessage }) => {

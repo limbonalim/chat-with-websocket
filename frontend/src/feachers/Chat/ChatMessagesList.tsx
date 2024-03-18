@@ -2,8 +2,13 @@ import { Grid } from '@mui/material';
 import ChatMessageItem from '../../components/ChatMessageItem/ChatMessageItem.tsx';
 import { useAppSelector } from '../../app/hooks.ts';
 import { selectMessages } from './chatSlice.ts';
+import { ISendMessage } from './ChatForm.tsx';
 
-const ChatMessagesList = () => {
+interface Props {
+	sendMessage: (message: ISendMessage) => void;
+}
+
+const ChatMessagesList: React.FC<Props> = ({ sendMessage }) => {
 	const messages = useAppSelector(selectMessages);
 
 	const render = messages.map(
@@ -15,6 +20,7 @@ const ChatMessagesList = () => {
 				createdAt={createdAt}
 				user={user}
 				recipient={recipient}
+				sendMessage={sendMessage}
 			/>
 		),
 	);

@@ -16,7 +16,7 @@ const Chat: React.FC<Props> = ({ sendMessage }) => {
 					<ChatUsersList />
 				</Grid>
 				<Grid>
-					<ChatMessagesList />
+					<ChatMessagesList sendMessage={sendMessage} />
 					<ChatForm sendMessage={sendMessage} />
 				</Grid>
 			</Grid>

@@ -66,56 +66,56 @@ export const mountRouter = () => {
 		console.log(`client (${id}) is connected`);
 		activeConnections.push({ id, ws });
 
+		const findMessage = async () => {
+			const allMessages = await Message.find({
+				isPersonal: false,
+			})
+				.populate([
+					{ path: 'user', select: 'displayName avatar -_id' },
+					{ path: 'recipient', select: 'displayName avatar -_id' },
+				])
+				.limit(30)
+				.exec();
+
+			const userMessages = await Message.find({
+				isPersonal: true,
+				user: user?._id,
+			})
+				.populate([
+					{ path: 'user', select: 'displayName avatar -_id' },
+					{ path: 'recipient', select: 'displayName avatar -_id' },
+				])
+				.limit(30)
+				.exec();
+
+			const forUserMessage = await Message.find({
+				isPersonal: true,
+				recipient: user?._id,
+			})
+				.populate([
+					{ path: 'user', select: 'displayName avatar -_id' },
+					{ path: 'recipient', select: 'displayName avatar -_id' },
+				])
+				.limit(30)
+				.exec();
+
+			const payload = [...allMessages, ...userMessages, ...forUserMessage].sort(
+				(a, b) =>
+					new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+			);
+			return {
+				type: IMessageType.newMessage,
+				payload,
+			};
+		};
+
 		ws.on('message', async (message) => {
 			try {
 				const messageData = JSON.parse(message.toString()) as IComingMessage;
 
 				if (messageData.type === IMessageType.sendMessage) {
 					await saveMessage(messageData, false);
-					const allMessages = await Message.find({
-						isPersonal: false,
-					})
-						.populate([
-							{ path: 'user', select: 'displayName avatar -_id' },
-							{ path: 'recipient', select: 'displayName avatar -_id' },
-						])
-						.limit(30)
-						.exec();
-
-					const userMessages = await Message.find({
-						isPersonal: true,
-						user: user?._id,
-					})
-						.populate([
-							{ path: 'user', select: 'displayName avatar -_id' },
-							{ path: 'recipient', select: 'displayName avatar -_id' },
-						])
-						.limit(30)
-						.exec();
-
-					const forUserMessage = await Message.find({
-						isPersonal: true,
-						recipient: user?._id,
-					})
-						.populate([
-							{ path: 'user', select: 'displayName avatar -_id' },
-							{ path: 'recipient', select: 'displayName avatar -_id' },
-						])
-						.limit(30)
-						.exec();
-
-					const payload = [
-						...allMessages,
-						...userMessages,
-						...forUserMessage,
-					].sort(
-						(a, b) =>
-							new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-					);
-					const answer = {
-						type: IMessageType.newMessage,
-						payload,
-					};
+					const answer = await findMessage();
 
 					activeConnections.forEach((connection) => {
 						connection.ws.send(JSON.stringify(answer));
@@ -136,50 +136,7 @@ export const mountRouter = () => {
 
 					activeConnections[index].user = findUser.toJSON();
 
-					const allMessages = await Message.find({
-						isPersonal: false,
-					})
-						.populate([
-							{ path: 'user', select: 'displayName avatar -_id' },
-							{ path: 'recipient', select: 'displayName avatar -_id' },
-						])
-						.limit(30)
-						.exec();
-
-					const userMessages = await Message.find({
-						isPersonal: true,
-						user: user?._id,
-					})
-						.populate([
-							{ path: 'user', select: 'displayName avatar -_id' },
-							{ path: 'recipient', select: 'displayName avatar -_id' },
-						])
-						.limit(30)
-						.exec();
-
-					const forUserMessage = await Message.find({
-						isPersonal: true,
-						recipient: user?._id,
-					})
-						.populate([
-							{ path: 'user', select: 'displayName avatar -_id' },
-							{ path: 'recipient', select: 'displayName avatar -_id' },
-						])
-						.limit(30)
-						.exec();
-
-					const payload = [
-						...allMessages,
-						...userMessages,
-						...forUserMessage,
-					].sort(
-						(a, b) =>
-							new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-					);
-					const answer = {
-						type: IMessageType.newMessage,
-						payload,
-					};
+					const answer = await findMessage();
 
 					const userInfo = {
 						type: IMessageType.activeUsersInfo,
@@ -215,51 +172,14 @@ export const mountRouter = () => {
 							(collection) => collection.id === id,
 						);
 					await saveMessage(messageData, true);
+					const answer = await findMessage();
 
-					const allMessages = await Message.find({
-						isPersonal: false,
-					})
-						.populate([
-							{ path: 'user', select: 'displayName avatar -_id' },
-							{ path: 'recipient', select: 'displayName avatar -_id' },
-						])
-						.limit(30)
-						.exec();
-
-					const userMessages = await Message.find({
-						isPersonal: true,
-						user: user,
-					})
-						.populate([
-							{ path: 'user', select: 'displayName avatar -_id' },
-							{ path: 'recipient', select: 'displayName avatar -_id' },
-						])
-						.limit(30)
-						.exec();
-					const forUserMessage = await Message.find({
-						isPersonal: true,
-						recipient: user,
-					})
-						.populate([
-							{ path: 'user', select: 'displayName avatar -_id' },
-							{ path: 'recipient', select: 'displayName avatar -_id' },
-						])
-						.limit(30)
-						.exec();
-					const payload = [...allMessages, ...userMessages, ...forUserMessage]
-						.map((item) => ({
-							payload: item,
-						}))
-						.sort(
-							(a, b) =>
-								new Date(a.payload.createdAt).getTime() -
-								new Date(b.payload.createdAt).getTime(),
-						);
-					const answer = {
-						type: IMessageType.newMessage,
-						payload,
-					};
-
+					activeConnections.forEach((connection) => {
+						connection.ws.send(JSON.stringify(answer));
+					});
+				} else if (messageData.type === IMessageType.deleteMessage) {
+					await Message.deleteOne({ _id: messageData.payload });
+					const answer = await findMessage();
 					activeConnections.forEach((connection) => {
 						connection.ws.send(JSON.stringify(answer));
 					});
