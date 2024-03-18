@@ -23,6 +23,10 @@ const messagesSchema = new Schema<IMessageFields, IMessageModel, unknown>({
 		type: Date,
 		default: new Date(),
 	},
+	isPersonal: {
+		type: Boolean,
+		required: true,
+	},
 	recipient: {
 		type: Schema.Types.ObjectId,
 		ref: 'users',
