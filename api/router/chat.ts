@@ -1,7 +1,7 @@
 import express from 'express';
 import { randomUUID } from 'crypto';
 import User from '../models/usersSchema';
-import { IActiveConnections, IComingMessage } from '../types';
+import { IActiveConnections, IComingMessage, IOutputMessage } from '../types';
 import Message from '../models/messagesSchema';
 import { Document } from 'mongoose';
 
@@ -35,36 +35,34 @@ const filterActiveConnections = () => {
 	return uniqueObjects;
 };
 
-const saveMessage = async (
-	messageData: IComingMessage,
-	isPersonal: boolean,
-) => {
-	let recipient;
-	const user = await User.findOne({
-		token: messageData.payload.user,
-	});
-
-	if (messageData.payload.recipient && isPersonal) {
-		recipient = await User.findOne({
-			token: messageData.payload.recipient,
-		});
-	}
-
-	const message = new Message({
-		message: messageData.payload.message,
-		user,
-		recipient,
-		isPersonal,
-	});
-	await message.save();
-};
-
 export const mountRouter = () => {
 	chatRouter.ws('/', async (ws, req, next) => {
 		const id = randomUUID();
 		let user: Document | null;
 		console.log(`client (${id}) is connected`);
 		activeConnections.push({ id, ws });
+
+		const saveMessage = async (
+			messageData: IComingMessage,
+			isPersonal: boolean,
+		) => {
+			let recipient;
+			const user = await User.findOne({
+				token: messageData.payload.user,
+			});
+
+			if (messageData.payload.recipient && isPersonal) {
+				recipient = await User.findById(messageData.payload.recipient);
+			}
+
+			const message = new Message({
+				message: messageData.payload.message,
+				user,
+				recipient,
+				isPersonal,
+			});
+			await message.save();
+		};
 
 		const findMessage = async () => {
 			const allMessages = await Message.find({
@@ -115,7 +113,7 @@ export const mountRouter = () => {
 
 				if (messageData.type === IMessageType.sendMessage) {
 					await saveMessage(messageData, false);
-					const answer = await findMessage();
+					const answer: IOutputMessage = await findMessage();
 
 					activeConnections.forEach((connection) => {
 						connection.ws.send(JSON.stringify(answer));
@@ -136,9 +134,9 @@ export const mountRouter = () => {
 
 					activeConnections[index].user = findUser.toJSON();
 
-					const answer = await findMessage();
+					const answer: IOutputMessage = await findMessage();
 
-					const userInfo = {
+					const userInfo: IOutputMessage = {
 						type: IMessageType.activeUsersInfo,
 						payload: Array.from(filterActiveConnections()),
 					};
@@ -155,9 +153,12 @@ export const mountRouter = () => {
 							.exec();
 						return user;
 					});
-					const answer = { type: IMessageType.activeUsersInfo, payload: users };
+					const answer: IOutputMessage = {
+						type: IMessageType.activeUsersInfo,
+						payload: users,
+					};
 
-					const userInfo = {
+					const userInfo: IOutputMessage = {
 						type: IMessageType.activeUsersInfo,
 						payload: Array.from(filterActiveConnections()),
 					};
@@ -172,14 +173,14 @@ export const mountRouter = () => {
 							(collection) => collection.id === id,
 						);
 					await saveMessage(messageData, true);
-					const answer = await findMessage();
+					const answer: IOutputMessage = await findMessage();
 
 					activeConnections.forEach((connection) => {
 						connection.ws.send(JSON.stringify(answer));
 					});
 				} else if (messageData.type === IMessageType.deleteMessage) {
 					await Message.deleteOne({ _id: messageData.payload });
-					const answer = await findMessage();
+					const answer: IOutputMessage = await findMessage();
 					activeConnections.forEach((connection) => {
 						connection.ws.send(JSON.stringify(answer));
 					});

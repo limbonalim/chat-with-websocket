@@ -36,7 +36,13 @@ export interface IUser {
 	token: string;
 }
 
-export type IPayloadUser = Pick<IUser, 'displayName', 'avatar'>;
+// export type IPayloadUser = Pick<IUser, 'displayName', 'avatar', '_id'>;
+
+export interface IPayloadUser {
+	_id: string;
+	displayName: string;
+	avatar?: string;
+}
 
 export interface IMessagePayload {
 	_id?: string;

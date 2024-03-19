@@ -5,8 +5,13 @@ import { selectUsers } from './chatSlice.ts';
 
 const ChatUsersList = () => {
 	const users = useAppSelector(selectUsers);
-	const render = users.map(({ displayName, avatar }, index) => (
-		<ChatUserItem key={index} displayName={displayName} avaatar={avatar} />
+	const render = users.map(({ _id, displayName, avatar }) => (
+		<ChatUserItem
+			key={_id}
+			_id={_id}
+			displayName={displayName}
+			avatar={avatar}
+		/>
 	));
 
 	return (

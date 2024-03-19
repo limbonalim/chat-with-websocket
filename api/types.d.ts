@@ -50,7 +50,15 @@ export interface IMessageOutputPayload {
 
 export interface IOutputMessage {
 	type: IMessageType;
-	payload: IMessageOutputPayload[];
+	payload:
+		| Document[]
+		| (Document<IUserFields, IUserModel, IUserMethods> | undefined)[]
+		| Promise<
+				| (Document<unknown, unknown, IUserFields> &
+						Omit<IUserFields & { _id: ObjectId }, keyof IUserMethods> &
+						IUserMethods)
+				| null
+		  >[];
 }
 
 export interface IMessageComingPayload {
